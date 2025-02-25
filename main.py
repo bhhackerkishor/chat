@@ -6,10 +6,13 @@ app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+def get_ai_response(message):
+    return f"Echo: {message}"  # Replace this with actual AI logic
+
 @socketio.on("message")
 def handle_message(data):
     user_message = data["message"]
-    bot_response = f"Echo: {user_message}"  # Replace this with an API call to a cloud-based AI
+    bot_response = get_ai_response(user_message)
     emit("response", {"message": bot_response})
 
 @app.route("/")
