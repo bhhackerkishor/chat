@@ -1,0 +1,5 @@
+flask
+flask-socketio
+flask-cors
+gunicorn
+gpt4all  # Only if using GPT4All (remove if not using)
