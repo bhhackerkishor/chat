@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Messenger</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <h2>AI Chatbot</h2>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        var socket = io("http://localhost:5000");
+
+        function sendMessage() {
+            let userMessage = document.getElementById("userInput").value;
+            document.getElementById("chatbox").innerHTML += "<p><strong>You:</strong> " + userMessage + "</p>";
+            
+            socket.emit("message", { message: userMessage });
+
+            socket.on("response", function(data) {
+                document.getElementById("chatbox").innerHTML += "<p><strong>AI:</strong> " + data.message + "</p>";
+            });
+
+            document.getElementById("userInput").value = "";
+        }
+    </script>
+</body>
+</html>
