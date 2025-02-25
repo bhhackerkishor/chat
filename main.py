@@ -1,21 +1,20 @@
-from flask import Flask, render_template, request
-from gpt4all import GPT4All
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from flask_socketio import SocketIO, emit
 
-# Create a Flask app
 app = Flask(__name__)
+CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Load the GPT4All model
-model = GPT4All("orca-mini-3b.ggmlv3.q4_0.bin")
+@socketio.on("message")
+def handle_message(data):
+    user_message = data["message"]
+    bot_response = f"Echo: {user_message}"  # Replace this with an API call to a cloud-based AI
+    emit("response", {"message": bot_response})
 
-# Chat session route
-@app.route('/chat', methods=['GET', 'POST'])
-def chat():
-    if request.method == 'POST':
-        user_input = request.form['user_input']
-        with model.chat_session():
-            response = model.generate(prompt=user_input, top_k=1)
-        return render_template('chat.html', user_input=user_input, response=response)
-    return render_template('chat.html')
+@app.route("/")
+def home():
+    return "AI Messenger Running Online!"
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    socketio.run(app, host="0.0.0.0", port=5000)
